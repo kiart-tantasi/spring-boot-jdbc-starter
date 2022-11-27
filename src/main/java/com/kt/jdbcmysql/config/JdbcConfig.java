@@ -11,13 +11,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JdbcConfig {
 
-    @Value("${mysql.config.connectionstring}")
+    @Value("${jdbc.config.connectionstring}")
     private String connectionString;
 
-    @Value("${mysql.config.username}")
+    @Value("${jdbc.config.username}")
     private String username;
 
-    @Value("${mysql.config.password}")
+    @Value("${jdbc.config.password}")
     private String password;
 
     @Bean
