@@ -10,9 +10,9 @@ CREATE TABLE test (name VARCHAR(254), age INT, career VARCHAR(254));
 
 INSERT INTO test (name, age, career) VALUES
 ('Kiart', 25, 'Engineer'),
-('Polo', 25, 'CTO'),
+('Polo', 32, 'CTO'),
 ('James', 25, 'Project Manager'),
-('Keith', 27, 'Engineer'),
+('Keith', 25, 'Engineer'),
 ('Petch', 19, 'Engineer');
 
 -- 3: create stored procedures
@@ -37,11 +37,11 @@ DROP PROCEDURE IF EXISTS get_by_age;
 DELIMITER //
 
 CREATE PROCEDURE get_by_age(
-	IN age int
+	IN $age INT
 )
 BEGIN
 	SELECT * FROM test t
-    WHERE t.age   = age
+    WHERE t.age = $age
     ;
 END //
 
@@ -54,11 +54,71 @@ DROP PROCEDURE IF EXISTS get_by_career;
 DELIMITER //
 
 CREATE PROCEDURE get_by_career(
-    IN career varchar(254)
+    IN $career VARCHAR(254)
 )
 BEGIN
 	SELECT * FROM test t
-    WHERE t.career = career
+    WHERE t.career = $career
+    ;
+END //
+
+DELIMITER ;
+
+-- 4
+
+DROP PROCEDURE IF EXISTS get_by_age_and_career;
+
+DELIMITER //
+
+CREATE PROCEDURE get_by_age_and_career(
+    IN $age INT,
+    IN $career VARCHAR(254)
+)
+BEGIN
+	SELECT * FROM test t
+    WHERE t.age = $age
+    and t.career = $career
+    ;
+END //
+
+DELIMITER ;
+
+
+-- 5
+
+DROP PROCEDURE IF EXISTS insert_employee;
+
+DELIMITER //
+
+CREATE PROCEDURE insert_employee(
+    IN $name VARCHAR(254),
+    IN $age INT,
+    IN $career VARCHAR(254)
+)
+BEGIN
+	INSERT INTO test    (name, age, career)
+    VALUES              ($name, $age, $career)
+    ;
+END //
+
+DELIMITER ;
+
+-- 6
+
+DROP PROCEDURE IF EXISTS delete_employee;
+
+DELIMITER //
+
+CREATE PROCEDURE delete_employee(
+    IN $name VARCHAR(254),
+    IN $age INT,
+    IN $career VARCHAR(254)
+)
+BEGIN
+	DELETE FROM test
+    WHERE name = $name
+    AND age = $age
+    AND career = $career
     ;
 END //
 

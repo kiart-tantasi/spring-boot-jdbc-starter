@@ -17,15 +17,28 @@ public class JdbcService {
     @Autowired
     private Connection connection;
 
-    public ResultSet executeStoredProcedure(String sp, SqlParameter ...params) throws SQLException{
+    public void executeSpVoid(String sp, SqlParameter ...params) throws SQLException {
+        this.executeSpHelper(sp, false, params);
+    }
+
+    public ResultSet executeSpResultSet(String sp, SqlParameter ...params) throws SQLException {
+        return this.executeSpHelper(sp, true, params);
+    }
+
+    private ResultSet executeSpHelper(String sp, boolean returnRs, SqlParameter ...params) throws SQLException{
+        final List<SqlParameter> list = List.of(params);
+        final int paramSize = list.size();
+
+        // transform sp to format `{ call sp_name(?) }`
+        sp = transformSp(sp, paramSize);
+
         // initialize a statement
-        CallableStatement statement = this.connection.prepareCall(sp);
+        final CallableStatement statement = this.connection.prepareCall(sp);
 
         // set up parameters into statement
-        final List<SqlParameter> list = List.of(params);        
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < paramSize; i++) {
             final SqlParameter param = list.get(i);
-            Object value = param.getValue();
+            final Object value = param.getValue();
 
             if (value instanceof String) {
                 statement.setString((i + 1), (String) value);
@@ -37,7 +50,23 @@ public class JdbcService {
         // execute
         statement.execute();
 
-        // return result set
-        return statement.getResultSet();
+        // return result set or void
+        if (returnRs == true) {
+            return statement.getResultSet();
+        } else {
+            return null;
+        }
+    }
+
+    private String transformSp(String sp, int paramsSize) {
+        String questionsMarks = "";
+        for (int i = 0; i < paramsSize; i++) {
+            if (i == (paramsSize -1)) {
+                questionsMarks += "?";
+            } else {
+                questionsMarks += "?, ";
+            }
+        }
+        return String.format("{ call %s(%s) }", sp, questionsMarks);
     }
 }

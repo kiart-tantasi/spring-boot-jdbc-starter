@@ -12,12 +12,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class PersonService {
 
-    @Autowired
+    private Connection connection;
+
     private Statement statement;
 
-    @Autowired
-    private Connection connection;
-    
+    public PersonService(@Autowired Connection connection) throws SQLException {
+        this.connection = connection;
+        this.statement = connection.createStatement();
+    }
+
+    public void demoThisService() throws SQLException {
+        System.out.println("\nStarting demoing Person service...\n");
+        this.createPersonTable();
+        this.insertPerson("David", "Beckham", 47);
+        this.insertPerson("Prayut", "Chanocha", 8);
+        this.insertPerson("Marika", "Nuanjun", 32);
+        this.printAllPeople();
+        this.dropPersonTable();
+    }
+
     public void createPersonTable() throws SQLException {
         statement
                 .execute("create table if not exists person (firstname varchar(254), lastname varchar(254), age int);");
@@ -35,7 +48,7 @@ public class PersonService {
         statement.setInt(3, age);
         final int affeted = statement.executeUpdate();
         if (affeted > 0) {
-            System.out.println("Inserting person succeeded.");
+            System.out.println("Inserting person succeeded...");
         } else {
             System.out.println("Inserting person failed !!!!");
         }
