@@ -3,10 +3,10 @@ package com.kt.jdbcmysql.models;
 import lombok.Getter;
 
 @Getter
-public class SqlParameter<T> {
-    private final T value;
+public class SqlParameter {
+    private final Object value;
 
-    public SqlParameter (T value) {
+    public SqlParameter(Object value) {
         this.value = value;
     }
 }
