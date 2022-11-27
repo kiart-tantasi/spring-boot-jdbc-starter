@@ -1,11 +1,25 @@
-# TODO
+# Setup
 
-Please set up your db name, connectionstring, username and password at
+Before start the application, please run
 
-1. src/main/resources/application.properties
+`docker-compose up -d`
 
-2. docker-compose.yaml
+(When finish, please run `docker-compose down --volumes` to remove the container and volume)
+
+It will create database `mydb` with root user that has password as `password`.
+
+It will also table `test` and insert some dummy data and stored procedures.
+
+**NOTE:** It will take around 1.30 minutes to finish setting up.
+
+**or you can use your own MySQL server and config connection string, username and password at application.properties file**
 
 <br>
 
-**The default one is with database named `myDb` and `root` user with password `password`**
+<hr>
+
+# Config
+
+You can config connectionstring, username and password at `src/main/resources/application.properties`.
+
+<br>

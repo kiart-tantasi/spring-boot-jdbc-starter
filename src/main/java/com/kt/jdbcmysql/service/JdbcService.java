@@ -1,53 +1,43 @@
 package com.kt.jdbcmysql.service;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.kt.jdbcmysql.models.SqlParameter;
 
 @Service
 public class JdbcService {
 
     @Autowired
-    private Statement statement;
-
-    @Autowired
     private Connection connection;
 
-    public void createPersonTable() throws SQLException {
-        statement
-                .execute("create table if not exists person (firstname varchar(254), lastname varchar(254), age int);");
-    }
+    public ResultSet executeStoredProcedure(String sp, SqlParameter ...params) throws SQLException{
+        // initialize a statement
+        CallableStatement statement = this.connection.prepareCall(sp);
 
-    public void dropPersonTable() throws SQLException {
-        statement.execute("drop table if exists person;");
-    }
+        // set up parameters into statement
+        final List<SqlParameter> list = List.of(params);        
+        for (int i = 0; i < list.size(); i++) {
+            final SqlParameter param = list.get(i);
+            Object value = param.getValue();
 
-    public void insertPerson(String firstname, String lastname, int age) throws SQLException {
-        PreparedStatement statement = connection
-                .prepareStatement("insert into person (firstname, lastname, age) values (?,?,?);");
-        statement.setString(1, firstname);
-        statement.setString(2, lastname);
-        statement.setInt(3, age);
-        final int affeted = statement.executeUpdate();
-        if (affeted > 0) {
-            System.out.println("Inserting person succeeded.");
-        } else {
-            System.out.println("Inserting person failed !!!!");
+            if (value instanceof String) {
+                statement.setString((i + 1), (String) value);
+            } else if (value instanceof Integer) {
+                statement.setInt((i + 1), (Integer) value);
+            }
         }
-    }
 
-    public void printAllPeople() throws SQLException {
-        final ResultSet rs = statement.executeQuery("select * from person;");
-        System.out.println("\nPeople:");
-        while (rs.next()) {
-            final String msg = String.format("%s %s - %s", rs.getString("firstname"), rs.getString("lastname"),
-                    rs.getInt("age"));
-            System.out.println(msg);
-        }
+        // execute
+        statement.execute();
+
+        // return result set
+        return statement.getResultSet();
     }
 }

@@ -1,13 +1,16 @@
 package com.kt.jdbcmysql;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import com.kt.jdbcmysql.models.SqlParameter;
 import com.kt.jdbcmysql.service.JdbcService;
-
 @SpringBootApplication
 public class JdbcMysqlApplication {
 
@@ -21,15 +24,25 @@ public class JdbcMysqlApplication {
 	@Bean
 	CommandLineRunner commandLineRunner() {
 		return args -> {
-			jdbcService.createPersonTable();
+			// 25 year old
+			System.out.println("\n25 year old:");
+			ResultSet rs = jdbcService.executeStoredProcedure("{ call get_by_age(?) }",
+			new SqlParameter<>(25));
+			while (rs.next()) {
+				printPerson(rs);
+			}
 
-			jdbcService.insertPerson("John", "Dolby", 30);
-			jdbcService.insertPerson("Ping", "Ping", 24);
-			jdbcService.insertPerson("Larson", "Velgus", 18);
-			jdbcService.insertPerson("Alaba", "Westdune", 57);
-			jdbcService.printAllPeople();
-
-			jdbcService.dropPersonTable();
+			// Engineers
+			System.out.println("\nEngineers:");
+			rs = jdbcService.executeStoredProcedure("{ call get_by_career(?) }",
+			new SqlParameter<>("Engineer"));
+			while (rs.next()) {
+				printPerson(rs);
+			}
 		};
+	}
+
+	private void printPerson(ResultSet rs) throws SQLException {
+		System.out.println(String.format("%s, working as %s, aged %s", rs.getString("name"), rs.getString("career"), rs.getInt("age")));
 	}
 }
