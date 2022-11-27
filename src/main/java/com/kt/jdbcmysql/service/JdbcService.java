@@ -1,6 +1,8 @@
 package com.kt.jdbcmysql.service;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Date;
@@ -71,9 +73,13 @@ public class JdbcService {
 
     private void setParameterIntoStatement(CallableStatement statement, Object value, int index) throws SQLException {
         switch (value.getClass().getSimpleName()) {
+
+            // String
             case "String":
                 statement.setString(index, (String) value);
                 break;
+
+            // Number
             case "Integer":
                 statement.setInt(index, (int) value);
                 break;
@@ -86,20 +92,40 @@ public class JdbcService {
             case "Float":
                 statement.setFloat(index, (float) value);
                 break;
+            case "BigDecimal":
+                statement.setBigDecimal(index, (BigDecimal) value);
+                break;
+
+            // Time
             case "Date":
                 statement.setDate(index, (Date) value);
                 break;
             case "Timestamp":
                 statement.setTimestamp(index, (Timestamp) value);
                 break;
-            case "BigDecimal":
-                statement.setBigDecimal(index, (BigDecimal) value);
-                break;
+
+            // Boolean
             case "Boolean":
                 statement.setBoolean(index, (boolean) value);
                 break;
+
+            // Files
+            case "Byte":
+                statement.setByte(index, (byte) value);
+                break;
+            case "Byte[]":
+                statement.setBytes(index, (byte[]) value);
+                break;
+            case "InputStream":
+                statement.setBinaryStream(index, (InputStream) value);
+                break;
+            case "Blob":
+                statement.setBlob(index, (Blob) value);
+                break;
+
+            // Others
             default:
-                throw new RuntimeException("This type of data is not yet accepted as parameter.");
+                throw new RuntimeException("Data type is not or not yet accepted as parameter.");
         }
     }
 }
