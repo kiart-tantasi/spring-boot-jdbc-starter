@@ -4,7 +4,6 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,36 +16,33 @@ public class JdbcService {
     @Autowired
     private Connection connection;
 
-    public void executeSpVoid(String sp, SqlParameter... params) throws SQLException {
+    public void executeStoredProcedureVoid(String sp, SqlParameter... params) throws SQLException {
         this.executeSpHelper(sp, false, params);
     }
 
-    public ResultSet executeSpResultSet(String sp, SqlParameter... params) throws SQLException {
+    public ResultSet executeStoredProcedureResultSet(String sp, SqlParameter... params) throws SQLException {
         return this.executeSpHelper(sp, true, params);
     }
 
+    public ResultSet[] executeStoredProcedureResultSets(String sp, SqlParameter... params) throws SQLException {
+        return new ResultSet[] {};
+    }
+
+    /*
+     * PRIVATE METHODS (UTILITIES)
+     */
     private ResultSet executeSpHelper(String sp, boolean returnRs, SqlParameter... params) throws SQLException {
-        final List<SqlParameter> list = List.of(params);
-        final int paramSize = list.size();
-
-        // transform sp to format `{ call sp_name(?) }`
+        final int paramSize = params.length;
         sp = this.transformSp(sp, paramSize);
-
-        // initialize a statement
         final CallableStatement statement = this.connection.prepareCall(sp);
 
-        // set up parameters into statement
         for (int index = 0; index < paramSize; index++) {
-            final SqlParameter param = list.get(index);
-            final Object value = param.getValue();
-
+            final Object value = params[index].getValue();
             this.setParameterIntoStatement(statement, value, (index + 1));
         }
 
-        // execute
         statement.execute();
 
-        // return result set or void
         if (returnRs == true) {
             return statement.getResultSet();
         } else {

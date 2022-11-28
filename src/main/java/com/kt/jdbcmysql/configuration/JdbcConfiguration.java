@@ -1,4 +1,4 @@
-package com.kt.jdbcmysql.config;
+package com.kt.jdbcmysql.configuration;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class JdbcConfig {
+public class JdbcConfiguration {
 
     @Value("${jdbc.config.connectionstring}")
     private String connectionString;
