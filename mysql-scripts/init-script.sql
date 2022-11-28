@@ -6,7 +6,15 @@ USE mydb;
 
 DROP TABLE IF EXISTS test;
 
-CREATE TABLE test (name VARCHAR(254), age INT, career VARCHAR(254));
+CREATE TABLE test (
+    name VARCHAR(254) NOT NULL,
+    age INT NOT NULL,
+    career VARCHAR(254) NOT NULL,
+    created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    points FLOAT(2) DEFAULT 99.99,
+    balance DECIMAL(10, 2) DEFAULT 1000.55,
+    dob DATE DEFAULT "2022-01-01"
+);
 
 INSERT INTO test (name, age, career) VALUES
 ('Kiart', 25, 'Engineer'),
