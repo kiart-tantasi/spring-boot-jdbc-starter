@@ -54,7 +54,7 @@ public class JdbcMysqlApplication {
 			// All employees
 			this.printAllEmployees();
 
-			// Insert new employee named Joseph who ages 29 and works as a Data Scientist.
+			// Insert new employee (Joseph, aged 29, Data Scientist)
 			System.out.println("\nInsert new employee...");
 			this.jdbcService.executeStoredProcedureVoid("insert_employee",
 					new SqlParameter("Joseph"),

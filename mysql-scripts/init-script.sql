@@ -11,8 +11,7 @@ CREATE TABLE test (
     age INT NOT NULL,
     career VARCHAR(254) NOT NULL,
     created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    points FLOAT(2) DEFAULT 99.99,
-    balance DECIMAL(10, 2) DEFAULT 1000.55,
+    score DECIMAL(10, 2) DEFAULT 50.00,
     dob DATE DEFAULT "2022-01-01"
 );
 
@@ -25,37 +24,35 @@ INSERT INTO test (name, age, career) VALUES
 
 -- 3: create stored procedures
 
--- 1
-
 DROP PROCEDURE IF EXISTS get_all;
 
 DELIMITER //
 
 CREATE PROCEDURE get_all()
 BEGIN
-	SELECT *  FROM test;
+    SELECT *  FROM test;
 END //
 
 DELIMITER ;
 
--- 2
+--
 
 DROP PROCEDURE IF EXISTS get_by_age;
 
 DELIMITER //
 
 CREATE PROCEDURE get_by_age(
-	IN $age INT
+    IN $age INT
 )
 BEGIN
-	SELECT * FROM test t
+    SELECT * FROM test t
     WHERE t.age = $age
     ;
 END //
 
 DELIMITER ;
 
--- 3
+--
 
 DROP PROCEDURE IF EXISTS get_by_career;
 
@@ -65,14 +62,14 @@ CREATE PROCEDURE get_by_career(
     IN $career VARCHAR(254)
 )
 BEGIN
-	SELECT * FROM test t
+    SELECT * FROM test t
     WHERE t.career = $career
     ;
 END //
 
 DELIMITER ;
 
--- 4
+--
 
 DROP PROCEDURE IF EXISTS get_by_age_and_career;
 
@@ -91,8 +88,7 @@ END //
 
 DELIMITER ;
 
-
--- 5
+--
 
 DROP PROCEDURE IF EXISTS insert_employee;
 
@@ -104,14 +100,36 @@ CREATE PROCEDURE insert_employee(
     IN $career VARCHAR(254)
 )
 BEGIN
-	INSERT INTO test    (name, age, career)
+    INSERT INTO test    (name, age, career)
     VALUES              ($name, $age, $career)
     ;
 END //
 
 DELIMITER ;
 
--- 6
+--
+
+DROP PROCEDURE IF EXISTS insert_employee_full;
+
+DELIMITER //
+
+CREATE PROCEDURE insert_employee_full(
+    IN $name VARCHAR(254),
+    IN $age INT,
+    IN $career VARCHAR(254),
+    IN $created_timestamp TIMESTAMP,
+    IN $score DECIMAL(10, 2),
+    IN $dob DATE
+)
+BEGIN
+    INSERT INTO test    (name, age, career, created_timestamp, score, dob)
+    VALUES              ($name, $age, $career, $created_timestamp, $score, $dob)
+    ;
+END //
+
+DELIMITER ;
+
+--
 
 DROP PROCEDURE IF EXISTS delete_employee;
 
@@ -123,7 +141,7 @@ CREATE PROCEDURE delete_employee(
     IN $career VARCHAR(254)
 )
 BEGIN
-	DELETE FROM test
+    DELETE FROM test
     WHERE name = $name
     AND age = $age
     AND career = $career
