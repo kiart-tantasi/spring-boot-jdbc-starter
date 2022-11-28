@@ -3,7 +3,13 @@ package com.kt.jdbcmysql.service;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,36 +23,49 @@ public class JdbcService {
     private Connection connection;
 
     public void executeStoredProcedureVoid(String sp, SqlParameter... params) throws SQLException {
-        this.executeSpHelper(sp, false, params);
+        this.executeStoredProcedure(sp, false, params);
     }
 
     public ResultSet executeStoredProcedureResultSet(String sp, SqlParameter... params) throws SQLException {
-        return this.executeSpHelper(sp, true, params);
+        final Statement statement = this.executeStoredProcedure(sp, true, params);
+        return statement.getResultSet();
     }
 
-    public ResultSet[] executeStoredProcedureResultSets(String sp, SqlParameter... params) throws SQLException {
-        return new ResultSet[] {};
+    public List<List<Map<String, Object>>> executeStoredProcedureResultSets(String sp, SqlParameter... params)
+            throws SQLException {
+        final Statement statement = this.executeStoredProcedure(sp, true, params);
+        return this.transformResultSetsToMap(statement);
     }
 
     /*
      * PRIVATE METHODS (UTILITIES)
      */
-    private ResultSet executeSpHelper(String sp, boolean returnRs, SqlParameter... params) throws SQLException {
+
+    private Statement executeStoredProcedure(String sp, boolean returnRs, SqlParameter... params)
+            throws SQLException {
         final int paramSize = params.length;
         sp = this.transformSp(sp, paramSize);
         final CallableStatement statement = this.connection.prepareCall(sp);
 
         for (int index = 0; index < paramSize; index++) {
-            final Object value = params[index].getValue();
-            this.setParameterIntoStatement(statement, value, (index + 1));
+            final SqlParameter param = params[index];
+            final Object value = param.getValue();
+            final String parameterName = param.getParameterName();
+            if (parameterName != null) {
+                // using parameter name e.g. $name, $age, $career
+                this.setParameterIntoStatement(statement, parameterName, value);
+            } else {
+                // using parameter index
+                this.setParameterIntoStatement(statement, (index + 1), value);
+            }
         }
 
         statement.execute();
 
-        if (returnRs == true) {
-            return statement.getResultSet();
-        } else {
+        if (returnRs == false) {
             return null;
+        } else {
+            return statement;
         }
     }
 
@@ -62,7 +81,37 @@ public class JdbcService {
         return String.format("{ call %s(%s) }", sp, questionsMarks);
     }
 
-    private void setParameterIntoStatement(CallableStatement statement, Object value, int index) throws SQLException {
+    private void setParameterIntoStatement(CallableStatement statement, int index, Object value) throws SQLException {
         statement.setObject(index, value);
+    }
+
+    private void setParameterIntoStatement(CallableStatement statement, String paramName, Object value)
+            throws SQLException {
+        statement.setObject(paramName, value);
+    }
+
+    private List<List<Map<String, Object>>> transformResultSetsToMap(Statement statement) throws SQLException {
+        final List<List<Map<String, Object>>> resultSetsMap = new ArrayList<>();
+        boolean hasNextResultSet = true;
+        while (hasNextResultSet) {
+            final ResultSet rs = statement.getResultSet();
+            final List<Map<String, Object>> resultSetMap = new ArrayList<>();
+
+            while (rs.next()) {
+                final Map<String, Object> sqlRow = new HashMap<>();
+                final ResultSetMetaData rsMetaData = rs.getMetaData();
+
+                for (int i = 1; i <= rsMetaData.getColumnCount(); i++) {
+                    final String columnName = rsMetaData.getColumnName(i);
+                    sqlRow.put(columnName, rs.getObject(columnName));
+                }
+                resultSetMap.add(sqlRow);
+            }
+
+            resultSetsMap.add(resultSetMap);
+            hasNextResultSet = statement.getMoreResults();
+        }
+
+        return resultSetsMap;
     }
 }

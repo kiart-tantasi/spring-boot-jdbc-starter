@@ -2,6 +2,8 @@ package com.kt.jdbcmysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -69,12 +71,14 @@ public class JdbcMysqlApplication {
 					new SqlParameter("Joseph"),
 					new SqlParameter(29),
 					new SqlParameter("Data Scientist"));
-		};
-	}
 
-	private void printPerson(ResultSet rs) throws SQLException {
-		System.out.println(String.format("%s, working as %s, aged %s", rs.getString("name"), rs.getString("career"),
-				rs.getInt("age")));
+			// Getting Multiple Result Sets
+			List<List<Map<String, Object>>> resultSetsMap = this.jdbcService.executeStoredProcedureResultSets(
+					"get_careers_result_sets",
+					new SqlParameter("Project Manager"),
+					new SqlParameter("CTO"));
+			this.printResultSetsMaps(resultSetsMap);
+		};
 	}
 
 	private void printAllEmployees() throws SQLException {
@@ -84,5 +88,26 @@ public class JdbcMysqlApplication {
 		while (rs.next()) {
 			printPerson(rs);
 		}
+	}
+
+	private void printResultSetsMaps(List<List<Map<String, Object>>> resultSetsMap) throws SQLException {
+		System.out.println("\n[RESULT SETS]\n");
+		for (final List<Map<String, Object>> resultSetMap : resultSetsMap) {
+			System.out.println("Current result set:");
+			for (final Map<String, Object> sqlRow : resultSetMap) {
+				printPerson(sqlRow);
+			}
+			System.out.println("");
+		}
+	}
+
+	private void printPerson(ResultSet rs) throws SQLException {
+		System.out.println(String.format("%s, working as %s, aged %s", rs.getString("name"), rs.getString("career"),
+				rs.getInt("age")));
+	}
+
+	private void printPerson(Map<String, Object> sqlRow) throws SQLException {
+		System.out.println(String.format("%s, working as %s, aged %s", sqlRow.get("name"), sqlRow.get("career"),
+				sqlRow.get("age")));
 	}
 }

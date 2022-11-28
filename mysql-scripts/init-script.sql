@@ -20,7 +20,8 @@ INSERT INTO test (name, age, career) VALUES
 ('Polo', 32, 'CTO'),
 ('James', 25, 'Project Manager'),
 ('Keith', 25, 'Engineer'),
-('Petch', 19, 'Engineer');
+('Petch', 19, 'Engineer'),
+('Mark', 32, 'Project Manager');
 
 -- 3: create stored procedures
 
@@ -145,6 +146,27 @@ BEGIN
     WHERE name = $name
     AND age = $age
     AND career = $career
+    ;
+END //
+
+DELIMITER ;
+
+--
+
+DROP PROCEDURE IF EXISTS get_careers_result_sets;
+
+DELIMITER //
+
+CREATE PROCEDURE get_careers_result_sets(
+    IN $career_one VARCHAR(254),
+    IN $career_two VARCHAR(254)
+)
+BEGIN
+    SELECT * FROM test t
+    WHERE t.career = $career_one
+    ;
+    SELECT * FROM test t
+    WHERE t.career = $career_two
     ;
 END //
 
