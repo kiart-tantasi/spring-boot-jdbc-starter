@@ -36,14 +36,6 @@ public class JdbcMysqlApplication {
 				printPerson(rs);
 			}
 
-			// Engineers
-			System.out.println("\nEmployees who work as Engineers:");
-			rs = this.jdbcService.executeStoredProcedureResultSet("get_by_career",
-					new SqlParameter("Engineer"));
-			while (rs.next()) {
-				printPerson(rs);
-			}
-
 			// Engineers who age at 25
 			System.out.println("\nEmployees who are 25 year old and work as Engineers:");
 			rs = this.jdbcService.executeStoredProcedureResultSet("get_by_age_and_career",
@@ -57,7 +49,7 @@ public class JdbcMysqlApplication {
 			this.printAllEmployees();
 
 			// Insert new employee (Joseph, aged 29, Data Scientist)
-			System.out.println("\nInsert new employee...");
+			System.out.println("\nInserting Joseph as a new employee...");
 			this.jdbcService.executeStoredProcedureVoid("insert_employee",
 					new SqlParameter("Joseph"),
 					new SqlParameter(29),
