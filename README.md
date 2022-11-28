@@ -2,17 +2,17 @@
 
 Before starting the application, please run
 
-`docker-compose up -d`
+```
+docker-compose up -d
+```
 
-or
-
-`make up` if you have `make` installed
+or `make up` if you have `make` installed to create MySQL server on Docker
 
 <br>
 
-It will create database `mydb` with root user that has password as `password`.
+It will also create database `mydb` with root user that has password as `password`.
 
-It will also table `test` and insert some dummy data and stored procedures.
+Moreover, it will create table `test` and insert some dummy data and stored procedures.
 
 <br>
 
@@ -25,7 +25,11 @@ It will also table `test` and insert some dummy data and stored procedures.
 
 # Configuration
 
-You can configure connection string, username and password at `src/main/resources/application.properties`.
+You can configure connection string, username and password at
+
+```
+src/main/resources/application.properties
+```
 
 <br>
 <br>
@@ -34,13 +38,11 @@ You can configure connection string, username and password at `src/main/resource
 
 When finish, please run
 
-`docker-compose down --volumes`
+```
+docker-compose down --volumes
+```
 
-or
-
-`make down`
-
-to remove the container and the volume
+or `make down` to remove the container and the volume
 
 <br>
 <br>

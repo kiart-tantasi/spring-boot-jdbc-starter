@@ -31,7 +31,7 @@ public class JdbcMysqlApplication {
 			// 25 year old
 			System.out.println("\nEmployees who are 25 year old:");
 			ResultSet rs = this.jdbcService.executeStoredProcedureResultSet("get_by_age",
-					new SqlParameter(25));
+					new SqlParameter("$age", 25));
 			while (rs.next()) {
 				printPerson(rs);
 			}
@@ -39,8 +39,8 @@ public class JdbcMysqlApplication {
 			// Engineers who age at 25
 			System.out.println("\nEmployees who are 25 year old and work as Engineers:");
 			rs = this.jdbcService.executeStoredProcedureResultSet("get_by_age_and_career",
-					new SqlParameter(25),
-					new SqlParameter("Engineer"));
+					new SqlParameter("$age", 25),
+					new SqlParameter("$career", "Engineer"));
 			while (rs.next()) {
 				printPerson(rs);
 			}
@@ -51,24 +51,24 @@ public class JdbcMysqlApplication {
 			// Insert new employee (Joseph, aged 29, Data Scientist)
 			System.out.println("\nInserting Joseph as a new employee...");
 			this.jdbcService.executeStoredProcedureVoid("insert_employee",
-					new SqlParameter("Joseph"),
-					new SqlParameter(29),
-					new SqlParameter("Data Scientist"));
+					new SqlParameter("$name", "Joseph"),
+					new SqlParameter("$age", 29),
+					new SqlParameter("$career", "Data Scientist"));
 
 			// All employees
 			this.printAllEmployees();
 
 			// Deleting Joseph
 			this.jdbcService.executeStoredProcedureVoid("delete_employee",
-					new SqlParameter("Joseph"),
-					new SqlParameter(29),
-					new SqlParameter("Data Scientist"));
+					new SqlParameter("$name", "Joseph"),
+					new SqlParameter("$age", 29),
+					new SqlParameter("$career", "Data Scientist"));
 
 			// Getting Multiple Result Sets
 			List<List<Map<String, Object>>> resultSetsMap = this.jdbcService.executeStoredProcedureResultSets(
 					"get_careers_result_sets",
-					new SqlParameter("Project Manager"),
-					new SqlParameter("CTO"));
+					new SqlParameter("$career_one", "Project Manager"),
+					new SqlParameter("$career_two", "CTO"));
 			this.printResultSetsMaps(resultSetsMap);
 		};
 	}
