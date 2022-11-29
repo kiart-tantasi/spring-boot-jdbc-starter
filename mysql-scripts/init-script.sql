@@ -20,7 +20,6 @@ INSERT INTO test (name, age, career) VALUES
 ('Polo', 32, 'CTO'),
 ('James', 25, 'Project Manager'),
 ('Keith', 25, 'Engineer'),
-('Petch', 19, 'Engineer'),
 ('Mark', 32, 'Project Manager');
 
 -- 3: create stored procedures
