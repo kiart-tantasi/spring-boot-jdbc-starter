@@ -26,27 +26,31 @@ public class JdbcService {
         this.executeStoredProcedure(sp, false, params);
     }
 
-    public ResultSet executeStoredProcedureResultSet(String sp, SqlParameter... params) throws SQLException {
+    public List<Map<String, Object>> getSingleResultSet(String sp, SqlParameter... params) throws SQLException {
         final Statement statement = this.executeStoredProcedure(sp, true, params);
-        return statement.getResultSet();
+        return this.getSingleResultSet(statement, null);
     }
 
-    public List<List<Map<String, Object>>> executeStoredProcedureResultSets(String sp, SqlParameter... params)
+    public List<Map<String, Object>> getSingleResultSetWithRowMapper(String sp,
+            List<String> rowMapper, SqlParameter... params)
+            throws SQLException {
+        final Statement statement = this.executeStoredProcedure(sp, true, params);
+        return this.getSingleResultSet(statement, rowMapper);
+    }
+
+    public List<List<Map<String, Object>>> getMultipleResultSets(String sp, SqlParameter... params)
             throws SQLException {
         final Statement statement = this.executeStoredProcedure(sp, true, params);
         return this.getMultipleResultSets(statement, null);
     }
 
-    public List<List<Map<String, Object>>> executeStoredProcedureResultSetsWithRowMappers(String sp,
+    public List<List<Map<String, Object>>> getMultipleResultSetsWithRowMappers(String sp,
             List<List<String>> rowMappers, SqlParameter... params)
             throws SQLException {
         final Statement statement = this.executeStoredProcedure(sp, true, params);
         return this.getMultipleResultSets(statement, rowMappers);
     }
 
-    /*
-     * PRIVATE METHODS (UTILITIES)
-     */
     private Statement executeStoredProcedure(String sp, boolean returnStatement, SqlParameter... params)
             throws SQLException {
         final int paramsSize = params.length;
@@ -60,6 +64,7 @@ public class JdbcService {
         }
 
         statement.execute();
+
         if (returnStatement == false) {
             return null;
         }
@@ -99,20 +104,20 @@ public class JdbcService {
         return multipleResultSets;
     }
 
-    private List<Map<String, Object>> getSingleResultSet(Statement statement, List<String> specifiedColumns)
+    private List<Map<String, Object>> getSingleResultSet(Statement statement, List<String> rowMapper)
             throws SQLException {
         final ResultSet rs = statement.getResultSet();
         final List<Map<String, Object>> singleResultSet = new ArrayList<>();
         while (rs.next()) {
-            final Map<String, Object> row = (specifiedColumns == null || specifiedColumns.size() == 0)
-                    ? this.getSingleRowWithAllColumns(rs)
-                    : this.getSingleRowWithSpecifiedColumns(rs, specifiedColumns);
+            final Map<String, Object> row = (rowMapper == null || rowMapper.size() == 0)
+                    ? this.getRowWithAllColumns(rs)
+                    : this.getRowWithRowMapper(rs, rowMapper);
             singleResultSet.add(row);
         }
         return singleResultSet;
     }
 
-    private Map<String, Object> getSingleRowWithAllColumns(ResultSet rs) throws SQLException {
+    private Map<String, Object> getRowWithAllColumns(ResultSet rs) throws SQLException {
         final Map<String, Object> row = new HashMap<>();
         final ResultSetMetaData rsMetaData = rs.getMetaData();
         for (int i = 1; i <= rsMetaData.getColumnCount(); i++) {
@@ -122,10 +127,10 @@ public class JdbcService {
         return row;
     }
 
-    private Map<String, Object> getSingleRowWithSpecifiedColumns(ResultSet rs, List<String> specifiedColumns)
+    private Map<String, Object> getRowWithRowMapper(ResultSet rs, List<String> rowMapper)
             throws SQLException {
         final Map<String, Object> row = new HashMap<>();
-        for (final String columnName : specifiedColumns) {
+        for (final String columnName : rowMapper) {
             row.put(columnName, rs.getObject(columnName));
         }
         return row;
