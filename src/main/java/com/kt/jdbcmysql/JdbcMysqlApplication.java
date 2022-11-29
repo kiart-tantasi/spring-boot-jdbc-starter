@@ -28,7 +28,7 @@ public class JdbcMysqlApplication {
 		return args -> {
 
 			// Getting Single Result Set Without Row Mapper (Returning All Columns)
-			System.out.println("\n[SINGLE RESULT SET]");
+			System.out.println("\n[----- SINGLE RESULT SET -----]");
 			System.out.println("\nEmployees who are 25 year old and work as Engineers:");
 			List<Map<String, Object>> singleResultSet = this.jdbcService.getSingleResultSet("get_by_age_and_career",
 					new SqlParameter("$age", 25),
@@ -43,7 +43,7 @@ public class JdbcMysqlApplication {
 					new SqlParameter("$career", "Data Scientist"));
 
 			// Getting Single Result Set With Row Mapper (Returning Specific Columns)
-			System.out.println("\n[SINGLE RESULT SET WITH ROW MAPPER]");
+			System.out.println("\n[----- SINGLE RESULT SET WITH ROW MAPPER -----]");
 			System.out.println("\nAll employees:");
 			final List<String> rowMapper = List.of("name");
 			singleResultSet = this.jdbcService.getSingleResultSetWithRowMapper("get_all",
@@ -63,7 +63,7 @@ public class JdbcMysqlApplication {
 					"get_careers_result_sets",
 					new SqlParameter("$career_one", "Project Manager"),
 					new SqlParameter("$career_two", "CTO"));
-			System.out.println("\n[MULTIPLE RESULT SETS]\n");
+			System.out.println("\n[----- MULTIPLE RESULT SETS -----]\n");
 			this.printMultipleCareers(multipleResultSets);
 
 			// Getting Multiple Result Sets With Row Mappers (Returning Specific Columns)
@@ -75,7 +75,7 @@ public class JdbcMysqlApplication {
 					rowMappers,
 					new SqlParameter("$career_one", "Project Manager"),
 					new SqlParameter("$career_two", "CTO"));
-			System.out.println("[MULTIPLE RESULT SETS WITH ROW MAPPERS]\n");
+			System.out.println("[----- MULTIPLE RESULT SETS WITH ROW MAPPERS -----]\n");
 			this.printMultipleCareersWithRowMappers(multipleResultSets, rowMappers);
 		};
 	}
