@@ -18,7 +18,20 @@ Moreover, it will create table `test` and insert some dummy data and stored proc
 
 **NOTE:** It will take around 1.30 minutes to finish setting up.
 
-**You can use your own MySQL server by configuring connection string, username and password at application.properties file**
+<br>
+<br>
+
+# How to Run App
+
+Please follow step above to set up MySQL first.
+
+If you use VS Code, you can right-click at `JdbcMysqlApplication.java` and click `Run Java`.
+
+If you do not have VS Code, please run this command to start the app
+
+```
+./gradlew bootRun
+```
 
 <br>
 <br>

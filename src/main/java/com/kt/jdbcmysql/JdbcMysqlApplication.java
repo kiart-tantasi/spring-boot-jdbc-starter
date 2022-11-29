@@ -1,6 +1,5 @@
 package com.kt.jdbcmysql;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -28,70 +27,118 @@ public class JdbcMysqlApplication {
 	CommandLineRunner commandLineRunner() {
 		return args -> {
 
-			// Employees who work as engineers and are 25-year-old
+			// Getting Single Result Set Without Row Mapper (Returning All Columns)
+			System.out.println("\n[----- SINGLE RESULT SET -----]");
 			System.out.println("\nEmployees who are 25 year old and work as Engineers:");
-			ResultSet rs = this.jdbcService.executeStoredProcedureResultSet("get_by_age_and_career",
+			List<Map<String, Object>> singleResultSet = this.jdbcService.getSingleResultSet("get_by_age_and_career",
 					new SqlParameter("$age", 25),
 					new SqlParameter("$career", "Engineer"));
-			while (rs.next()) {
-				printPerson(rs);
-			}
+			this.printPeople(singleResultSet);
 
-			// All employees
-			this.printAllEmployees();
-
-			// Insert new employee (Joseph, aged 29, Data Scientist)
+			// Executing Stored Procedure (No Return)
 			System.out.println("\nInserting Joseph as a new employee...");
-			this.jdbcService.executeStoredProcedureVoid("insert_employee",
+			this.jdbcService.executeStoredProcedure("insert_employee",
 					new SqlParameter("$name", "Joseph"),
 					new SqlParameter("$age", 29),
 					new SqlParameter("$career", "Data Scientist"));
 
-			// All employees
-			this.printAllEmployees();
+			// Getting Single Result Set With Row Mapper (Returning Specific Columns)
+			System.out.println("\n[----- SINGLE RESULT SET WITH ROW MAPPER -----]");
+			System.out.println("\nAll employees:");
+			final List<String> rowMapper = List.of("name");
+			singleResultSet = this.jdbcService.getSingleResultSetWithRowMapper("get_all",
+					rowMapper,
+					new SqlParameter[] {});
+			this.printPeopleWithRowMapper(singleResultSet, rowMapper);
 
-			// Deleting Joseph
-			this.jdbcService.executeStoredProcedureVoid("delete_employee",
+			// Cleaning up Joseph
+			System.out.println("\nDeleting Joseph...");
+			this.jdbcService.executeStoredProcedure("delete_employee",
 					new SqlParameter("$name", "Joseph"),
 					new SqlParameter("$age", 29),
 					new SqlParameter("$career", "Data Scientist"));
 
-			// Getting Multiple Result Sets
-			List<List<Map<String, Object>>> resultSetsMap = this.jdbcService.executeStoredProcedureResultSets(
+			// Getting Multiple Result Sets Without Row Mappers (Returning All Columns)
+			List<List<Map<String, Object>>> multipleResultSets = this.jdbcService.getMultipleResultSets(
 					"get_careers_result_sets",
 					new SqlParameter("$career_one", "Project Manager"),
 					new SqlParameter("$career_two", "CTO"));
-			this.printResultSetsMaps(resultSetsMap);
+			System.out.println("\n[----- MULTIPLE RESULT SETS -----]\n");
+			this.printMultipleCareers(multipleResultSets);
+
+			// Getting Multiple Result Sets With Row Mappers (Returning Specific Columns)
+			final List<List<String>> rowMappers = List.of(
+					List.of("name", "age"),
+					List.of("name", "score", "dob"));
+			multipleResultSets = this.jdbcService.getMultipleResultSetsWithRowMappers(
+					"get_careers_result_sets",
+					rowMappers,
+					new SqlParameter("$career_one", "Project Manager"),
+					new SqlParameter("$career_two", "CTO"));
+			System.out.println("[----- MULTIPLE RESULT SETS WITH ROW MAPPERS -----]\n");
+			this.printMultipleCareersWithRowMappers(multipleResultSets, rowMappers);
 		};
 	}
 
-	private void printAllEmployees() throws SQLException {
-		System.out.println("\nAll employees:");
-		ResultSet rs = this.jdbcService.executeStoredProcedureResultSet("get_all",
-				new SqlParameter[] {});
-		while (rs.next()) {
-			printPerson(rs);
+	private void printPeople(final List<Map<String, Object>> singleResultSet) throws SQLException {
+		for (final Map<String, Object> sqlRow : singleResultSet) {
+			this.printPerson(sqlRow);
 		}
 	}
 
-	private void printResultSetsMaps(List<List<Map<String, Object>>> resultSetsMap) throws SQLException {
-		System.out.println("\n[RESULT SETS]\n");
-		for (final List<Map<String, Object>> resultSetMap : resultSetsMap) {
+	private void printPeopleWithRowMapper(final List<Map<String, Object>> singleResultSet,
+			final List<String> rowMapper) {
+		for (final Map<String, Object> sqlRow : singleResultSet) {
+			this.printPersonWithRowMapper(sqlRow, rowMapper);
+		}
+	}
+
+	private void printMultipleCareers(final List<List<Map<String, Object>>> multipleResultSets) throws SQLException {
+		for (final List<Map<String, Object>> singleResultSet : multipleResultSets) {
 			System.out.println("Current result set:");
-			for (final Map<String, Object> sqlRow : resultSetMap) {
-				printPerson(sqlRow);
+			for (final Map<String, Object> sqlRow : singleResultSet) {
+				this.printPerson(sqlRow);
 			}
 			System.out.println("");
 		}
 	}
 
-	private void printPerson(ResultSet rs) throws SQLException {
-		System.out.println(String.format("%s, working as %s, aged %s", rs.getString("name"), rs.getString("career"),
-				rs.getInt("age")));
+	private void printMultipleCareersWithRowMappers(final List<List<Map<String, Object>>> multipleResultSets,
+			final List<List<String>> rowMappers) throws SQLException {
+		int rowMapperIndex = 0;
+		for (final List<Map<String, Object>> singleResultSet : multipleResultSets) {
+			System.out.println("Current result set:");
+			final List<String> rowMapper = rowMappers.get(rowMapperIndex);
+			for (final Map<String, Object> sqlRow : singleResultSet) {
+				printPersonWithRowMapper(sqlRow, rowMapper);
+			}
+			rowMapperIndex++;
+			System.out.println("");
+		}
 	}
 
-	private void printPerson(Map<String, Object> sqlRow) throws SQLException {
-		System.out.println(String.format("%s, working as %s, aged %s", sqlRow.get("name"), sqlRow.get("career"),
-				sqlRow.get("age")));
+	private void printPerson(final Map<String, Object> sqlRow) throws SQLException {
+		System.out
+				.println(String.format("name - %s, career - %s, age - %s, created_timestamp - %s, score - %s, dob - %s",
+						sqlRow.get("name"),
+						sqlRow.get("career"),
+						sqlRow.get("age"),
+						sqlRow.get("created_timestamp"),
+						sqlRow.get("score"),
+						sqlRow.get("dob")));
+	}
+
+	private void printPersonWithRowMapper(final Map<String, Object> sqlRow, final List<String> rowMapper) {
+		boolean firstRow = true;
+		String message = "";
+		for (final String column : rowMapper) {
+			if (firstRow == true) {
+				message += String.format("%s - %s", column, sqlRow.get(column));
+				firstRow = false;
+			} else {
+				message += String.format(", %s - %s", column, sqlRow.get(column));
+			}
+		}
+		System.out.println(message);
 	}
 }
