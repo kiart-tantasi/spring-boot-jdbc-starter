@@ -51,7 +51,8 @@ public class JdbcMysqlApplication {
 					new SqlParameter[] {});
 			this.printPeopleWithRowMapper(singleResultSet, rowMapper);
 
-			// Deleting Joseph
+			// Cleaning up Joseph
+			System.out.println("\nDeleting Joseph...");
 			this.jdbcService.executeStoredProcedure("delete_employee",
 					new SqlParameter("$name", "Joseph"),
 					new SqlParameter("$age", 29),
@@ -74,24 +75,25 @@ public class JdbcMysqlApplication {
 					rowMappers,
 					new SqlParameter("$career_one", "Project Manager"),
 					new SqlParameter("$career_two", "CTO"));
-			System.out.println("\n[MULTIPLE RESULT SETS WITH ROW MAPPERS]\n");
+			System.out.println("[MULTIPLE RESULT SETS WITH ROW MAPPERS]\n");
 			this.printMultipleCareersWithRowMappers(multipleResultSets, rowMappers);
 		};
 	}
 
-	private void printPeople(List<Map<String, Object>> singleResultSet) throws SQLException {
+	private void printPeople(final List<Map<String, Object>> singleResultSet) throws SQLException {
 		for (final Map<String, Object> sqlRow : singleResultSet) {
 			this.printPerson(sqlRow);
 		}
 	}
 
-	private void printPeopleWithRowMapper(List<Map<String, Object>> singleResultSet, List<String> rowMapper) {
+	private void printPeopleWithRowMapper(final List<Map<String, Object>> singleResultSet,
+			final List<String> rowMapper) {
 		for (final Map<String, Object> sqlRow : singleResultSet) {
 			this.printPersonWithRowMapper(sqlRow, rowMapper);
 		}
 	}
 
-	private void printMultipleCareers(List<List<Map<String, Object>>> multipleResultSets) throws SQLException {
+	private void printMultipleCareers(final List<List<Map<String, Object>>> multipleResultSets) throws SQLException {
 		for (final List<Map<String, Object>> singleResultSet : multipleResultSets) {
 			System.out.println("Current result set:");
 			for (final Map<String, Object> sqlRow : singleResultSet) {
@@ -101,8 +103,8 @@ public class JdbcMysqlApplication {
 		}
 	}
 
-	private void printMultipleCareersWithRowMappers(List<List<Map<String, Object>>> multipleResultSets,
-			List<List<String>> rowMappers) throws SQLException {
+	private void printMultipleCareersWithRowMappers(final List<List<Map<String, Object>>> multipleResultSets,
+			final List<List<String>> rowMappers) throws SQLException {
 		int rowMapperIndex = 0;
 		for (final List<Map<String, Object>> singleResultSet : multipleResultSets) {
 			System.out.println("Current result set:");
@@ -115,7 +117,7 @@ public class JdbcMysqlApplication {
 		}
 	}
 
-	private void printPerson(Map<String, Object> sqlRow) throws SQLException {
+	private void printPerson(final Map<String, Object> sqlRow) throws SQLException {
 		System.out
 				.println(String.format("name - %s, career - %s, age - %s, created_timestamp - %s, score - %s, dob - %s",
 						sqlRow.get("name"),
@@ -126,7 +128,7 @@ public class JdbcMysqlApplication {
 						sqlRow.get("dob")));
 	}
 
-	private void printPersonWithRowMapper(Map<String, Object> sqlRow, List<String> rowMapper) {
+	private void printPersonWithRowMapper(final Map<String, Object> sqlRow, final List<String> rowMapper) {
 		boolean firstRow = true;
 		String message = "";
 		for (final String column : rowMapper) {
