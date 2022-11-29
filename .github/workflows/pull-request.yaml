@@ -15,9 +15,7 @@ jobs:
           distribution: "corretto"
           java-version: "17"
           cache: gradle
-      - name: BootRun
+      - name: Build
         run: |
           chmod +x ./gradlew
-          ./gradlew bootRun
-      - name: Build
-        run: ./gradlew clean build
+          ./gradlew clean build
