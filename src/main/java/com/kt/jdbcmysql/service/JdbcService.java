@@ -40,7 +40,6 @@ public class JdbcService {
     /*
      * PRIVATE METHODS (UTILITIES)
      */
-
     private Statement executeStoredProcedure(String sp, boolean returnRs, SqlParameter... params)
             throws SQLException {
         final int paramSize = params.length;
@@ -49,15 +48,8 @@ public class JdbcService {
 
         for (int index = 0; index < paramSize; index++) {
             final SqlParameter param = params[index];
-            final Object value = param.getValue();
-            final String parameterName = param.getParameterName();
-            if (parameterName != null) {
-                // using parameter name e.g. $name, $age, $career
-                this.setParameterIntoStatement(statement, parameterName, value);
-            } else {
-                // using parameter index
-                this.setParameterIntoStatement(statement, (index + 1), value);
-            }
+            final int sqlParameterIndex = index + 1;
+            this.setParameterIntoStatement(statement, param, sqlParameterIndex);
         }
 
         statement.execute();
@@ -81,13 +73,16 @@ public class JdbcService {
         return String.format("{ call %s(%s) }", sp, questionsMarks);
     }
 
-    private void setParameterIntoStatement(CallableStatement statement, int index, Object value) throws SQLException {
-        statement.setObject(index, value);
-    }
-
-    private void setParameterIntoStatement(CallableStatement statement, String paramName, Object value)
+    private void setParameterIntoStatement(CallableStatement statement, SqlParameter param, int sqlParameterIndex)
             throws SQLException {
-        statement.setObject(paramName, value);
+        final Object value = param.getValue();
+        final String parameterName = param.getParameterName();
+
+        if (parameterName == null) {
+            statement.setObject(sqlParameterIndex, value);
+        } else {
+            statement.setObject(parameterName, value);
+        }
     }
 
     private List<List<Map<String, Object>>> transformResultSetsToMap(Statement statement) throws SQLException {

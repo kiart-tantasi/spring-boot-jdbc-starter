@@ -28,17 +28,9 @@ public class JdbcMysqlApplication {
 	CommandLineRunner commandLineRunner() {
 		return args -> {
 
-			// 25 year old
-			System.out.println("\nEmployees who are 25 year old:");
-			ResultSet rs = this.jdbcService.executeStoredProcedureResultSet("get_by_age",
-					new SqlParameter("$age", 25));
-			while (rs.next()) {
-				printPerson(rs);
-			}
-
-			// Engineers who age at 25
+			// Employees who work as engineers and are 25-year-old
 			System.out.println("\nEmployees who are 25 year old and work as Engineers:");
-			rs = this.jdbcService.executeStoredProcedureResultSet("get_by_age_and_career",
+			ResultSet rs = this.jdbcService.executeStoredProcedureResultSet("get_by_age_and_career",
 					new SqlParameter("$age", 25),
 					new SqlParameter("$career", "Engineer"));
 			while (rs.next()) {
