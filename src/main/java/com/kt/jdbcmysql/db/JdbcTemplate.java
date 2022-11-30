@@ -1,4 +1,4 @@
-package com.kt.jdbcmysql.service;
+package com.kt.jdbcmysql.db;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -11,77 +11,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.kt.jdbcmysql.models.SqlParameter;
 
-@Service
-public class JdbcService {
+@Component
+public class JdbcTemplate {
 
-    @Autowired
-    private Connection connection;
+    private JdbcTemplateHelper jdbcTemplateHelper;
+
+    public JdbcTemplate(Connection connection) {
+        this.jdbcTemplateHelper = new JdbcTemplateHelper(connection);
+    }
 
     public void executeStoredProcedure(final String sp, final SqlParameter... params) throws SQLException {
-        this.executeStoredProcedure(sp, false, params);
+        this.jdbcTemplateHelper.executeStoredProcedure(sp, false, params);
     }
 
     public List<Map<String, Object>> getSingleResultSet(final String sp, final SqlParameter... params)
             throws SQLException {
-        final Statement statement = this.executeStoredProcedure(sp, true, params);
+        final Statement statement = this.jdbcTemplateHelper.executeStoredProcedure(sp, true, params);
         return this.getSingleResultSet(statement, null);
     }
 
     public List<Map<String, Object>> getSingleResultSetWithRowMapper(final String sp,
             final List<String> rowMapper, final SqlParameter... params)
             throws SQLException {
-        final Statement statement = this.executeStoredProcedure(sp, true, params);
+        final Statement statement = this.jdbcTemplateHelper.executeStoredProcedure(sp, true, params);
         return this.getSingleResultSet(statement, rowMapper);
     }
 
     public List<List<Map<String, Object>>> getMultipleResultSets(final String sp, final SqlParameter... params)
             throws SQLException {
-        final Statement statement = this.executeStoredProcedure(sp, true, params);
+        final Statement statement = this.jdbcTemplateHelper.executeStoredProcedure(sp, true, params);
         return this.getMultipleResultSets(statement, null);
     }
 
     public List<List<Map<String, Object>>> getMultipleResultSetsWithRowMappers(final String sp,
             final List<List<String>> rowMappers, final SqlParameter... params)
             throws SQLException {
-        final Statement statement = this.executeStoredProcedure(sp, true, params);
+        final Statement statement = this.jdbcTemplateHelper.executeStoredProcedure(sp, true, params);
         return this.getMultipleResultSets(statement, rowMappers);
-    }
-
-    private Statement executeStoredProcedure(String sp, final boolean returnStatement, final SqlParameter... params)
-            throws SQLException {
-        final int paramsSize = params.length;
-        sp = this.transformStoredProcedure(sp, paramsSize);
-        final CallableStatement statement = this.connection.prepareCall(sp);
-
-        for (int index = 0; index < paramsSize; index++) {
-            final SqlParameter param = params[index];
-            final int sqlParameterIndex = index + 1;
-            this.setSqlParameter(statement, param, sqlParameterIndex);
-        }
-
-        statement.execute();
-
-        if (returnStatement == false) {
-            return null;
-        }
-        return statement;
-    }
-
-    private void setSqlParameter(final CallableStatement statement, final SqlParameter param,
-            final int sqlParameterIndex)
-            throws SQLException {
-        final Object value = param.getValue();
-        final String parameterName = param.getParameterName();
-        if (parameterName == null) {
-            statement.setObject(sqlParameterIndex, value);
-        } else {
-            statement.setObject(parameterName, value);
-        }
     }
 
     private List<List<Map<String, Object>>> getMultipleResultSets(final Statement statement,
@@ -138,8 +108,49 @@ public class JdbcService {
         }
         return row;
     }
+}
 
-    private String transformStoredProcedure(final String sp, final int paramsSize) {
+class JdbcTemplateHelper {
+
+    private Connection connection;
+
+    public JdbcTemplateHelper(Connection connection) {
+        this.connection = connection;
+    }
+
+    public Statement executeStoredProcedure(String sp, final boolean returnStatement, final SqlParameter... params)
+            throws SQLException {
+        final int paramsSize = params.length;
+        sp = this.prepareStoredProcedureToCall(sp, paramsSize);
+        final CallableStatement statement = this.connection.prepareCall(sp);
+
+        for (int index = 0; index < paramsSize; index++) {
+            final SqlParameter param = params[index];
+            final int sqlParameterIndex = index + 1;
+            this.setSqlParameter(statement, param, sqlParameterIndex);
+        }
+
+        statement.execute();
+
+        if (returnStatement == false) {
+            return null;
+        }
+        return statement;
+    }
+
+    private void setSqlParameter(final CallableStatement statement, final SqlParameter param,
+            final int sqlParameterIndex)
+            throws SQLException {
+        final Object value = param.getValue();
+        final String parameterName = param.getParameterName();
+        if (parameterName == null) {
+            statement.setObject(sqlParameterIndex, value);
+        } else {
+            statement.setObject(parameterName, value);
+        }
+    }
+
+    private String prepareStoredProcedureToCall(final String sp, final int paramsSize) {
         String questionsMarks = "";
         for (int i = 0; i < paramsSize; i++) {
             if (i == (paramsSize - 1)) {

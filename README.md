@@ -59,3 +59,14 @@ or `make down` to remove the container and the volume
 
 <br>
 <br>
+
+# Testing
+
+The project does not have any tests yet so it is prune to have some errors/bugs.
+
+Unit and Integration Tests are planned to be written shortly.
+
+For now, please test by starting MySQL docker, starting java app and seeing the results in terminal.
+
+<br>
+<br>

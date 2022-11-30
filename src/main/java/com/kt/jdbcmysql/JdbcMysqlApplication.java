@@ -10,14 +10,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import com.kt.jdbcmysql.db.JdbcTemplate;
 import com.kt.jdbcmysql.models.SqlParameter;
-import com.kt.jdbcmysql.service.JdbcService;
 
 @SpringBootApplication
 public class JdbcMysqlApplication {
 
 	@Autowired
-	private JdbcService jdbcService;
+	private JdbcTemplate jdbcTemplate;
 
 	public static void main(String[] args) {
 		SpringApplication.run(JdbcMysqlApplication.class, args);
@@ -30,14 +30,14 @@ public class JdbcMysqlApplication {
 			// Getting Single Result Set Without Row Mapper (Returning All Columns)
 			System.out.println("\n[----- SINGLE RESULT SET -----]");
 			System.out.println("\nEmployees who are 25 year old and work as Engineers:");
-			List<Map<String, Object>> singleResultSet = this.jdbcService.getSingleResultSet("get_by_age_and_career",
+			List<Map<String, Object>> singleResultSet = this.jdbcTemplate.getSingleResultSet("get_by_age_and_career",
 					new SqlParameter("$age", 25),
 					new SqlParameter("$career", "Engineer"));
 			this.printPeople(singleResultSet);
 
 			// Executing Stored Procedure (No Return)
 			System.out.println("\nInserting Joseph as a new employee...");
-			this.jdbcService.executeStoredProcedure("insert_employee",
+			this.jdbcTemplate.executeStoredProcedure("insert_employee",
 					new SqlParameter("$name", "Joseph"),
 					new SqlParameter("$age", 29),
 					new SqlParameter("$career", "Data Scientist"));
@@ -46,20 +46,20 @@ public class JdbcMysqlApplication {
 			System.out.println("\n[----- SINGLE RESULT SET WITH ROW MAPPER -----]");
 			System.out.println("\nAll employees:");
 			final List<String> rowMapper = List.of("name");
-			singleResultSet = this.jdbcService.getSingleResultSetWithRowMapper("get_all",
+			singleResultSet = this.jdbcTemplate.getSingleResultSetWithRowMapper("get_all",
 					rowMapper,
 					new SqlParameter[] {});
 			this.printPeopleWithRowMapper(singleResultSet, rowMapper);
 
 			// Cleaning up Joseph
 			System.out.println("\nDeleting Joseph...");
-			this.jdbcService.executeStoredProcedure("delete_employee",
+			this.jdbcTemplate.executeStoredProcedure("delete_employee",
 					new SqlParameter("$name", "Joseph"),
 					new SqlParameter("$age", 29),
 					new SqlParameter("$career", "Data Scientist"));
 
 			// Getting Multiple Result Sets Without Row Mappers (Returning All Columns)
-			List<List<Map<String, Object>>> multipleResultSets = this.jdbcService.getMultipleResultSets(
+			List<List<Map<String, Object>>> multipleResultSets = this.jdbcTemplate.getMultipleResultSets(
 					"get_careers_result_sets",
 					new SqlParameter("$career_one", "Project Manager"),
 					new SqlParameter("$career_two", "CTO"));
@@ -70,7 +70,7 @@ public class JdbcMysqlApplication {
 			final List<List<String>> rowMappers = List.of(
 					List.of("name", "age"),
 					List.of("name", "score", "dob"));
-			multipleResultSets = this.jdbcService.getMultipleResultSetsWithRowMappers(
+			multipleResultSets = this.jdbcTemplate.getMultipleResultSetsWithRowMappers(
 					"get_careers_result_sets",
 					rowMappers,
 					new SqlParameter("$career_one", "Project Manager"),
