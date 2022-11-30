@@ -108,57 +108,57 @@ public class JdbcTemplate {
         }
         return row;
     }
-}
 
-class JdbcTemplateHelper {
+    private class JdbcTemplateHelper {
 
-    private Connection connection;
+        private Connection connection;
 
-    public JdbcTemplateHelper(Connection connection) {
-        this.connection = connection;
-    }
-
-    public Statement executeStoredProcedure(String sp, final boolean returnStatement, final SqlParameter... params)
-            throws SQLException {
-        final int paramsSize = params.length;
-        sp = this.prepareStoredProcedureToCall(sp, paramsSize);
-        final CallableStatement statement = this.connection.prepareCall(sp);
-
-        for (int index = 0; index < paramsSize; index++) {
-            final SqlParameter param = params[index];
-            final int sqlParameterIndex = index + 1;
-            this.setSqlParameter(statement, param, sqlParameterIndex);
+        private JdbcTemplateHelper(Connection connection) {
+            this.connection = connection;
         }
 
-        statement.execute();
+        private Statement executeStoredProcedure(String sp, final boolean returnStatement, final SqlParameter... params)
+                throws SQLException {
+            final int paramsSize = params.length;
+            sp = this.prepareStoredProcedureToCall(sp, paramsSize);
+            final CallableStatement statement = this.connection.prepareCall(sp);
 
-        if (returnStatement == false) {
-            return null;
+            for (int index = 0; index < paramsSize; index++) {
+                final SqlParameter param = params[index];
+                final int sqlParameterIndex = index + 1;
+                this.setSqlParameter(statement, param, sqlParameterIndex);
+            }
+
+            statement.execute();
+
+            if (returnStatement == false) {
+                return null;
+            }
+            return statement;
         }
-        return statement;
-    }
 
-    private void setSqlParameter(final CallableStatement statement, final SqlParameter param,
-            final int sqlParameterIndex)
-            throws SQLException {
-        final Object value = param.getValue();
-        final String parameterName = param.getParameterName();
-        if (parameterName == null) {
-            statement.setObject(sqlParameterIndex, value);
-        } else {
-            statement.setObject(parameterName, value);
-        }
-    }
-
-    private String prepareStoredProcedureToCall(final String sp, final int paramsSize) {
-        String questionsMarks = "";
-        for (int i = 0; i < paramsSize; i++) {
-            if (i == (paramsSize - 1)) {
-                questionsMarks += "?";
+        private void setSqlParameter(final CallableStatement statement, final SqlParameter param,
+                final int sqlParameterIndex)
+                throws SQLException {
+            final Object value = param.getValue();
+            final String parameterName = param.getParameterName();
+            if (parameterName == null) {
+                statement.setObject(sqlParameterIndex, value);
             } else {
-                questionsMarks += "?, ";
+                statement.setObject(parameterName, value);
             }
         }
-        return String.format("{ call %s(%s) }", sp, questionsMarks);
+
+        private String prepareStoredProcedureToCall(final String sp, final int paramsSize) {
+            String questionsMarks = "";
+            for (int i = 0; i < paramsSize; i++) {
+                if (i == (paramsSize - 1)) {
+                    questionsMarks += "?";
+                } else {
+                    questionsMarks += "?, ";
+                }
+            }
+            return String.format("{ call %s(%s) }", sp, questionsMarks);
+        }
     }
 }
