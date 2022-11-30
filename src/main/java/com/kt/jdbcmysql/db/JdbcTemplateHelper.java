@@ -63,9 +63,4 @@ public class JdbcTemplateHelper {
         }
         return String.format("{ call %s(%s) }", sp, questionsMarks);
     }
-
-    // for testing
-    public String greeting() {
-        return "Hello World";
-    }
 }

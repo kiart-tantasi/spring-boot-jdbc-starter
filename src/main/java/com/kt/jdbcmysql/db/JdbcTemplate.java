@@ -51,8 +51,7 @@ public class JdbcTemplate {
     }
 
     /*
-     * All below methods are private and are used as utilities for public methods
-     * above.
+     * Private Ultility Methods
      */
     private List<List<Map<String, Object>>> getMultipleResultSets(final Statement statement,
             final List<List<String>> rowMappers)
@@ -107,16 +106,5 @@ public class JdbcTemplate {
             row.put(columnName, rs.getObject(columnName));
         }
         return row;
-    }
-
-    // for testing
-    public String greeting() {
-        return this.jdbcTemplateHelper.greeting();
-    }
-
-    // for testing
-    public ResultSet testStatementMock() throws SQLException {
-        Statement statement = this.jdbcTemplateHelper.executeStoredProcedure("sp", true, new SqlParameter[] {});
-        return statement.getResultSet();
     }
 }

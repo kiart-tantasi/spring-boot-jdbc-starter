@@ -47,8 +47,7 @@ public class JdbcMysqlApplication {
 			System.out.println("\nAll employees:");
 			final List<String> rowMapper = List.of("name");
 			singleResultSet = this.jdbcTemplate.getSingleResultSetWithRowMapper("get_all",
-					rowMapper,
-					new SqlParameter[] {});
+					rowMapper);
 			this.printPeopleWithRowMapper(singleResultSet, rowMapper);
 
 			// Cleaning up Joseph
