@@ -6,9 +6,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.kt.jdbcmysql.models.SqlParameter;
 
+@Component
 public class JdbcTemplateHelper {
 
     @Autowired

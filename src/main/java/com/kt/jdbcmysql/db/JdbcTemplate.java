@@ -113,4 +113,10 @@ public class JdbcTemplate {
     public String greeting() {
         return this.jdbcTemplateHelper.greeting();
     }
+
+    // for testing
+    public ResultSet testStatementMock() throws SQLException {
+        Statement statement = this.jdbcTemplateHelper.executeStoredProcedure("sp", true, new SqlParameter[] {});
+        return statement.getResultSet();
+    }
 }
