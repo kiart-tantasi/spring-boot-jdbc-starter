@@ -30,9 +30,10 @@ public class JdbcTemplate {
         return this.getSingleResultSet(statement, null);
     }
 
-    public List<Map<String, Object>> getSingleResultSetWithRowMapper(final String sp,
-            final List<String> rowMapper, final SqlParameter... params)
-            throws SQLException {
+    public List<Map<String, Object>> getSingleResultSetWithRowMapper(
+            final String sp,
+            final List<String> rowMapper,
+            final SqlParameter... params) throws SQLException {
         final Statement statement = this.jdbcTemplateHelper.executeStoredProcedure(sp, true, params);
         return this.getSingleResultSet(statement, rowMapper);
     }
@@ -43,7 +44,8 @@ public class JdbcTemplate {
         return this.getMultipleResultSets(statement, null);
     }
 
-    public List<List<Map<String, Object>>> getMultipleResultSetsWithRowMappers(final String sp,
+    public List<List<Map<String, Object>>> getMultipleResultSetsWithRowMappers(
+            final String sp,
             final List<List<String>> rowMappers, final SqlParameter... params)
             throws SQLException {
         final Statement statement = this.jdbcTemplateHelper.executeStoredProcedure(sp, true, params);
