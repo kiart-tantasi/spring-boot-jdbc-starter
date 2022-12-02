@@ -16,10 +16,6 @@ public class JdbcTemplateHelper {
     @Autowired
     private Connection connection;
 
-    public JdbcTemplateHelper(Connection connection) {
-        this.connection = connection;
-    }
-
     public Statement executeStoredProcedure(String sp, final boolean returnStatement, final SqlParameter... params)
             throws SQLException {
         final int paramsSize = params.length;

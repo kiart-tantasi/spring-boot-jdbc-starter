@@ -49,7 +49,7 @@ public class JdbcTemplateTest {
         when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, true))
                 .thenReturn(mockStatement);
 
-        final Map<String, Object> receivedRow = jdbcTemplate.getSingleResultSet(SP_NAME).get(0);
+        final Map<String, Object> receivedRow = jdbcTemplate.executeSpSingleResultSet(SP_NAME).get(0);
         assertEquals(VALUE_1, receivedRow.get(COLUMN_1));
         assertEquals(VALUE_2, receivedRow.get(COLUMN_2));
         assertEquals(VALUE_3, receivedRow.get(COLUMN_3));
@@ -64,7 +64,7 @@ public class JdbcTemplateTest {
         when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, true))
                 .thenReturn(mockStatement);
 
-        final List<List<Map<String, Object>>> receivedResultSets = jdbcTemplate.getMultipleResultSets(SP_NAME);
+        final List<List<Map<String, Object>>> receivedResultSets = jdbcTemplate.executeSpMultipleResultSets(SP_NAME);
 
         final Map<String, Object> firstRsFirstRow = receivedResultSets.get(FIRST_RS_INDEX).get(0);
         assertEquals(VALUE_1, firstRsFirstRow.get(COLUMN_1));
@@ -77,26 +77,9 @@ public class JdbcTemplateTest {
         assertEquals(VALUE_3, secondRsFirstRow.get(COLUMN_3));
     }
 
-    // TODO: test method getSingleResultSetWithRowMapper()
-    // @Test
-    // void getSingleResultSetWithRowMapper() throws SQLException {
-    // final Statement mockStatement = getMockStatement(false);
-    // when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, true))
-    // .thenReturn(mockStatement);
+    // TODO: test method executeSpSingleResultSetWithRowMapper()
 
-    // final List<String> rowMapper = List.of("col1", "col2");
-
-    // final Map<String, Object> receivedRow =
-    // jdbcTemplate.getSingleResultSetWithRowMapper(SP_NAME, rowMapper).get(0);
-    // assertEquals(VALUE_1, receivedRow.get(COLUMN_1));
-    // assertEquals(VALUE_2, receivedRow.get(COLUMN_2));
-    // assertEquals(VALUE_3, receivedRow.get(COLUMN_3));
-    // }
-
-    // TODO: test method getMultipleResultSetsWithRowMappers()
-    // @Test
-    // void getMultipleResultSetsWithRowMappers() {
-    // }
+    // TODO: test method executeSpMultipleResultSetsWithRowMappers()
 
     /*
      * Private Utility Methods

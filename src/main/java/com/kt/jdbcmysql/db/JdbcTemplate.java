@@ -24,13 +24,13 @@ public class JdbcTemplate {
         this.jdbcTemplateHelper.executeStoredProcedure(sp, false, params);
     }
 
-    public List<Map<String, Object>> getSingleResultSet(final String sp, final SqlParameter... params)
+    public List<Map<String, Object>> executeSpSingleResultSet(final String sp, final SqlParameter... params)
             throws SQLException {
         final Statement statement = this.jdbcTemplateHelper.executeStoredProcedure(sp, true, params);
         return this.getSingleResultSet(statement, null);
     }
 
-    public List<Map<String, Object>> getSingleResultSetWithRowMapper(
+    public List<Map<String, Object>> executeSpSingleResultSetWithRowMapper(
             final String sp,
             final List<String> rowMapper,
             final SqlParameter... params) throws SQLException {
@@ -38,13 +38,13 @@ public class JdbcTemplate {
         return this.getSingleResultSet(statement, rowMapper);
     }
 
-    public List<List<Map<String, Object>>> getMultipleResultSets(final String sp, final SqlParameter... params)
+    public List<List<Map<String, Object>>> executeSpMultipleResultSets(final String sp, final SqlParameter... params)
             throws SQLException {
         final Statement statement = this.jdbcTemplateHelper.executeStoredProcedure(sp, true, params);
         return this.getMultipleResultSets(statement, null);
     }
 
-    public List<List<Map<String, Object>>> getMultipleResultSetsWithRowMappers(
+    public List<List<Map<String, Object>>> executeSpMultipleResultSetsWithRowMappers(
             final String sp,
             final List<List<String>> rowMappers, final SqlParameter... params)
             throws SQLException {

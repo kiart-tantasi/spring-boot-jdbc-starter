@@ -62,11 +62,13 @@ or `make down` to remove the container and the volume
 
 # Testing
 
-The project does not have any tests yet so it is prune to have some errors/bugs.
+Testing is only 50% code coverage so the app is now error-prone.
 
-Unit and Integration Tests are planned to be written shortly.
+**For now, you can test with 2 steps**
 
-For now, please test by starting MySQL docker, starting java app and seeing the results in terminal.
+1. run `./gradlew test` (50% coverage)
+
+2. start MySQL docker and run `./gradlew bootRun`
 
 <br>
 <br>

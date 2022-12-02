@@ -30,7 +30,7 @@ public class JdbcMysqlApplication {
 			// Getting Single Result Set Without Row Mapper (Returning All Columns)
 			System.out.println("\n[----- SINGLE RESULT SET -----]");
 			System.out.println("\nEmployees who are 25 year old and work as Engineers:");
-			List<Map<String, Object>> singleResultSet = this.jdbcTemplate.getSingleResultSet("get_by_age_and_career",
+			List<Map<String, Object>> singleResultSet = this.jdbcTemplate.executeSpSingleResultSet("get_by_age_and_career",
 					new SqlParameter("$age", 25),
 					new SqlParameter("$career", "Engineer"));
 			this.printPeople(singleResultSet);
@@ -46,7 +46,7 @@ public class JdbcMysqlApplication {
 			System.out.println("\n[----- SINGLE RESULT SET WITH ROW MAPPER -----]");
 			System.out.println("\nAll employees:");
 			final List<String> rowMapper = List.of("name");
-			singleResultSet = this.jdbcTemplate.getSingleResultSetWithRowMapper("get_all",
+			singleResultSet = this.jdbcTemplate.executeSpSingleResultSetWithRowMapper("get_all",
 					rowMapper);
 			this.printPeopleWithRowMapper(singleResultSet, rowMapper);
 
@@ -58,7 +58,7 @@ public class JdbcMysqlApplication {
 					new SqlParameter("$career", "Data Scientist"));
 
 			// Getting Multiple Result Sets Without Row Mappers (Returning All Columns)
-			List<List<Map<String, Object>>> multipleResultSets = this.jdbcTemplate.getMultipleResultSets(
+			List<List<Map<String, Object>>> multipleResultSets = this.jdbcTemplate.executeSpMultipleResultSets(
 					"get_careers_result_sets",
 					new SqlParameter("$career_one", "Project Manager"),
 					new SqlParameter("$career_two", "CTO"));
@@ -69,7 +69,7 @@ public class JdbcMysqlApplication {
 			final List<List<String>> rowMappers = List.of(
 					List.of("name", "age"),
 					List.of("name", "score", "dob"));
-			multipleResultSets = this.jdbcTemplate.getMultipleResultSetsWithRowMappers(
+			multipleResultSets = this.jdbcTemplate.executeSpMultipleResultSetsWithRowMappers(
 					"get_careers_result_sets",
 					rowMappers,
 					new SqlParameter("$career_one", "Project Manager"),
