@@ -13,16 +13,9 @@ jobs:
           distribution: "corretto"
           java-version: "17"
           cache: gradle
-      - name: Unit Test and Code Coverage Test
+      - name: Test
         run: |
           chmod +x ./gradlew
-          ./gradlew jacoco
+          ./gradlew test
       - name: Build
         run: ./gradlew clean build -x test
-      - name: Upload Jacoco Reports If Fails
-        uses: actions/upload-artifact@v3
-        if: ${{ failure() }}
-        with:
-          name: jacoco-report
-          path: build/reports
-          retention-days: 1
