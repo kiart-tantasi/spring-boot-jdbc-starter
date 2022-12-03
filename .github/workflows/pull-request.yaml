@@ -19,3 +19,10 @@ jobs:
           ./gradlew jacoco
       - name: Build
         run: ./gradlew clean build -x test
+      - name: Upload Jacoco Reports If Fails
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: jacoco-report
+          path: build/reports
+          retention-days: 1
