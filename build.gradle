@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.5'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'jacoco'
 }
 
 group = 'com.kt'
@@ -20,4 +21,43 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// JACOCO
+jacoco {
+    toolVersion = "0.8.8"
+    reportsDirectory = file("${buildDir}/reports/jacoco")
+}
+String[] excludeds = [
+  "**/JdbcMysqlApplication.*",
+  "**/models/*",
+  "**/configuration/*",
+]
+jacocoTestReport {
+	afterEvaluate {
+	    classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: excludeds)
+		}))
+	}
+}
+jacocoTestCoverageVerification {
+	dependsOn "jacocoTestReport"
+	afterEvaluate {
+	    classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: excludeds)
+		}))
+	}
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.60
+            }
+        }
+    }
+}
+
+tasks.create(name: "jacoco") {
+	dependsOn "test"
+	dependsOn "jacocoTestReport"
+	dependsOn "jacocoTestCoverageVerification"
 }
