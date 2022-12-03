@@ -30,14 +30,15 @@ public class JdbcMysqlApplication {
 			// Getting Single Result Set Without Row Mapper (Returning All Columns)
 			System.out.println("\n[----- SINGLE RESULT SET -----]");
 			System.out.println("\nEmployees who are 25 year old and work as Engineers:");
-			List<Map<String, Object>> singleResultSet = this.jdbcTemplate.executeSpSingleResultSet("get_by_age_and_career",
+			List<Map<String, Object>> singleResultSet = this.jdbcTemplate.executeSpSingleResultSet(
+					"get_by_age_and_career",
 					new SqlParameter("$age", 25),
 					new SqlParameter("$career", "Engineer"));
 			this.printPeople(singleResultSet);
 
 			// Executing Stored Procedure (No Return)
 			System.out.println("\nInserting Joseph as a new employee...");
-			this.jdbcTemplate.executeStoredProcedure("insert_employee",
+			this.jdbcTemplate.executeSp("insert_employee",
 					new SqlParameter("$name", "Joseph"),
 					new SqlParameter("$age", 29),
 					new SqlParameter("$career", "Data Scientist"));
@@ -52,7 +53,7 @@ public class JdbcMysqlApplication {
 
 			// Cleaning up Joseph
 			System.out.println("\nDeleting Joseph...");
-			this.jdbcTemplate.executeStoredProcedure("delete_employee",
+			this.jdbcTemplate.executeSp("delete_employee",
 					new SqlParameter("$name", "Joseph"),
 					new SqlParameter("$age", 29),
 					new SqlParameter("$career", "Data Scientist"));

@@ -20,7 +20,7 @@ public class JdbcTemplate {
     @Autowired
     private JdbcTemplateHelper jdbcTemplateHelper;
 
-    public void executeStoredProcedure(final String sp, final SqlParameter... params) throws SQLException {
+    public void executeSp(final String sp, final SqlParameter... params) throws SQLException {
         this.jdbcTemplateHelper.executeStoredProcedure(sp, false, params);
     }
 

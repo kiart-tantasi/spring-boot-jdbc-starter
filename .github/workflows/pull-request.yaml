@@ -18,4 +18,4 @@ jobs:
           chmod +x ./gradlew
           ./gradlew test
       - name: Build
-        run: ./gradlew clean build -x test
+        run: ./gradlew clean build
