@@ -39,12 +39,12 @@ public class JdbcTemplateTest {
     void executeStoredProcedure() throws SQLException {
         when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, false))
             .thenReturn(null);
-        jdbcTemplate.executeStoredProcedure(SP_NAME);
+        jdbcTemplate.executeSp(SP_NAME);
         verify(jdbcTemplateHelper).executeStoredProcedure(SP_NAME, false);
     }
 
     @Test
-    void getSingleResultSet() throws SQLException {
+    void executeSpSingleResultSet() throws SQLException {
         final Statement mockStatement = getMockStatement(false);
         when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, true))
                 .thenReturn(mockStatement);
@@ -55,8 +55,15 @@ public class JdbcTemplateTest {
         assertEquals(VALUE_3, receivedRow.get(COLUMN_3));
     }
 
+    // TODO: test method executeSpSingleResultSetWithRowMapper()
+
     @Test
-    void getMultipleResultSets() throws SQLException {
+    void executeSpSingleResultSetWithRowMapper() {
+
+    }
+
+    @Test
+    void executeSpMultipleResultSets() throws SQLException {
         final int FIRST_RS_INDEX = 0;
         final int SECOND_RS_INDEX = 1;
 
@@ -76,8 +83,6 @@ public class JdbcTemplateTest {
         assertEquals(VALUE_2, secondRsFirstRow.get(COLUMN_2));
         assertEquals(VALUE_3, secondRsFirstRow.get(COLUMN_3));
     }
-
-    // TODO: test method executeSpSingleResultSetWithRowMapper()
 
     // TODO: test method executeSpMultipleResultSetsWithRowMappers()
 
