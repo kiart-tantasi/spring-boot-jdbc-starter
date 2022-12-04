@@ -34,7 +34,7 @@ String[] excludeds = [
 ]
 jacocoTestReport {
 	reports {
-        xml.required = true
+		xml.required = true
 	}
 	afterEvaluate {
 	    classDirectories.setFrom(files(classDirectories.files.collect {
