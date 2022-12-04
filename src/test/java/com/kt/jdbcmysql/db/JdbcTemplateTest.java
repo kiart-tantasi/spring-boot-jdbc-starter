@@ -71,11 +71,6 @@ public class JdbcTemplateTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
-    void tryfail() {
-        assertEquals("ABC", "CDA");
-    }
-
-    @Test
     void executeStoredProcedure() throws SQLException {
         when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, NOT_RETURN_STATEMENT))
             .thenReturn(null);
