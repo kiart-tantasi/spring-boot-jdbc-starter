@@ -13,9 +13,9 @@ jobs:
           distribution: "corretto"
           java-version: "17"
           cache: gradle
-      - name: Test
+      - name: Unit Test and Code Coverage Test
         run: |
           chmod +x ./gradlew
-          ./gradlew test
+          ./gradlew jacoco
       - name: Build
         run: ./gradlew clean build
