@@ -62,13 +62,21 @@ or `make down` to remove the container and the volume
 
 # Testing
 
-Testing is only 50% code coverage so the app is now error-prone.
+Unit Test
 
-**For now, you can test with 2 steps**
+`./gradlew test`
 
-1. run `./gradlew test` (50% coverage)
+<br>
 
-2. start MySQL docker and run `./gradlew bootRun`
+Unit Test and Code Coverage Test
+
+`./gradlew jacoco`
+
+<br>
+
+**Code Coverage Record**
+
+- December 4th, 2022 - [100%](https://github.com/kiart-tantasi/spring-boot-jdbc-starter/pull/9#issuecomment-1336326987)
 
 <br>
 <br>

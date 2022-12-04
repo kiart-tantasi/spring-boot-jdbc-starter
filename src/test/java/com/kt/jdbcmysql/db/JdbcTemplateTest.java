@@ -5,10 +5,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +58,12 @@ public class JdbcTemplateTest {
     private final List<String> ROW_MAPPER_2 = List.of(COLUMN_1_2_RM, COLUMN_2_2_RM);
     private final List<List<String>> ROW_MAPPERS = List.of(ROW_MAPPER, ROW_MAPPER_2);
 
+    // BOOLEAN
+    private final boolean RETURN_STATEMENT = true;
+    private final boolean NOT_RETURN_STATEMENT = false;
+    private final boolean MULTIPLE_RESULT_SETS = true;
+    private final boolean NOT_MULTIPLE_RESULT_SETS = false;
+
     @Mock
     private JdbcTemplateHelper jdbcTemplateHelper;
 
@@ -65,16 +72,16 @@ public class JdbcTemplateTest {
 
     @Test
     void executeStoredProcedure() throws SQLException {
-        when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, false))
+        when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, NOT_RETURN_STATEMENT))
             .thenReturn(null);
         jdbcTemplate.executeSp(SP_NAME);
-        verify(jdbcTemplateHelper).executeStoredProcedure(SP_NAME, false);
+        verify(jdbcTemplateHelper).executeStoredProcedure(SP_NAME, NOT_RETURN_STATEMENT);
     }
 
     @Test
     void executeSpSingleResultSet() throws SQLException {
-        final Statement mockStatement = getMockStatement(false);
-        when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, true))
+        final CallableStatement mockStatement = getMockStatement(NOT_MULTIPLE_RESULT_SETS);
+        when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, RETURN_STATEMENT))
                 .thenReturn(mockStatement);
 
         final Map<String, Object> receivedRow = jdbcTemplate.executeSpSingleResultSet(SP_NAME).get(0);
@@ -85,8 +92,8 @@ public class JdbcTemplateTest {
 
     @Test
     void executeSpSingleResultSetWithRowMapper() throws SQLException {
-        final Statement mockStatement = getMockStatementWithRowMapping(false);
-        when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, true))
+        final CallableStatement mockStatement = getMockStatementWithRowMapping(NOT_MULTIPLE_RESULT_SETS);
+        when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, RETURN_STATEMENT))
                 .thenReturn(mockStatement);
 
         final Map<String, Object> receivedRow = jdbcTemplate.executeSpSingleResultSetWithRowMapper(SP_NAME, ROW_MAPPER)
@@ -96,9 +103,24 @@ public class JdbcTemplateTest {
     }
 
     @Test
+    void executeSpSingleResultSetWithEmptyRowMapper() throws SQLException {
+        final CallableStatement mockStatement = getMockStatement(NOT_MULTIPLE_RESULT_SETS);
+        when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, RETURN_STATEMENT))
+                .thenReturn(mockStatement);
+
+        final List<String> EMPTY_ROW_MAPPER = new ArrayList<>();
+        final Map<String, Object> receivedRow = jdbcTemplate
+                .executeSpSingleResultSetWithRowMapper(SP_NAME, EMPTY_ROW_MAPPER)
+                .get(0);
+        assertEquals(VALUE_1, receivedRow.get(COLUMN_1));
+        assertEquals(VALUE_2, receivedRow.get(COLUMN_2));
+        assertEquals(VALUE_3, receivedRow.get(COLUMN_3));
+    }
+
+    @Test
     void executeSpMultipleResultSets() throws SQLException {
-        final Statement mockStatement = getMockStatement(true);
-        when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, true))
+        final CallableStatement mockStatement = getMockStatement(MULTIPLE_RESULT_SETS);
+        when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, RETURN_STATEMENT))
                 .thenReturn(mockStatement);
 
         final List<List<Map<String, Object>>> receivedResultSets = jdbcTemplate.executeSpMultipleResultSets(SP_NAME);
@@ -116,8 +138,8 @@ public class JdbcTemplateTest {
 
     @Test
     void executeSpMultipleResultSetsWithRowMappers() throws SQLException {
-        final Statement mockStatement = getMockStatementWithRowMapping(true);
-        when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, true))
+        final CallableStatement mockStatement = getMockStatementWithRowMapping(MULTIPLE_RESULT_SETS);
+        when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, RETURN_STATEMENT))
                 .thenReturn(mockStatement);
 
         final List<List<Map<String, Object>>> receivedResultSets = jdbcTemplate
@@ -132,10 +154,31 @@ public class JdbcTemplateTest {
         assertEquals(VALUE_2_2_RM, secondResultSetFirstRow.get(COLUMN_2_2_RM));
     }
 
+    @Test
+    void executeSpMultipleResultSetsWithEmptyRowMapperList() throws SQLException {
+        final CallableStatement mockStatement = getMockStatement(MULTIPLE_RESULT_SETS);
+        when(jdbcTemplateHelper.executeStoredProcedure(SP_NAME, RETURN_STATEMENT))
+                .thenReturn(mockStatement);
+
+        final List<List<String>> EMPTY_ROW_MAPPER_LIST = new ArrayList<>();
+        final List<List<Map<String, Object>>> receivedResultSets = jdbcTemplate
+                .executeSpMultipleResultSetsWithRowMappers(SP_NAME, EMPTY_ROW_MAPPER_LIST);
+
+        final Map<String, Object> firstResultSetFirstRow = receivedResultSets.get(FIRST_RESULT_SET_INDEX).get(0);
+        assertEquals(VALUE_1, firstResultSetFirstRow.get(COLUMN_1));
+        assertEquals(VALUE_2, firstResultSetFirstRow.get(COLUMN_2));
+        assertEquals(VALUE_3, firstResultSetFirstRow.get(COLUMN_3));
+
+        final Map<String, Object> secondResultSetFirstRow = receivedResultSets.get(SECOND_RESULT_SET_INDEX).get(0);
+        assertEquals(VALUE_1_2, secondResultSetFirstRow.get(COLUMN_1_2));
+        assertEquals(VALUE_2_2, secondResultSetFirstRow.get(COLUMN_2_2));
+        assertEquals(VALUE_3_2, secondResultSetFirstRow.get(COLUMN_3_2));
+    }
+
     /*
      * Private Utility Methods
      */
-    private Statement getMockStatement(boolean multipleResultSets) throws SQLException {
+    private CallableStatement getMockStatement(boolean multipleResultSets) throws SQLException {
 
         // META DATA
         final ResultSetMetaData metaData = mock(ResultSetMetaData.class);
@@ -178,7 +221,7 @@ public class JdbcTemplateTest {
         }
 
         // STATEMENT
-        final Statement statement = mock(Statement.class);
+        final CallableStatement statement = mock(CallableStatement.class);
         when(statement.getResultSet()).thenReturn(rs);
         if (multipleResultSets == false) {
             // NO STUBBING
@@ -189,7 +232,7 @@ public class JdbcTemplateTest {
         return statement;
     }
 
-    private Statement getMockStatementWithRowMapping(boolean multipleResultSets) throws SQLException {
+    private CallableStatement getMockStatementWithRowMapping(boolean multipleResultSets) throws SQLException {
 
         // RESULT SET
         final ResultSet rs = mock(ResultSet.class);
@@ -215,7 +258,7 @@ public class JdbcTemplateTest {
         }
 
         // STATEMENT
-        final Statement statement = mock(Statement.class);
+        final CallableStatement statement = mock(CallableStatement.class);
         when(statement.getResultSet()).thenReturn(rs);
         if (multipleResultSets == false) {
             // NO STUBBING

@@ -3,7 +3,6 @@ package com.kt.jdbcmysql.db;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +15,9 @@ public class JdbcTemplateHelper {
     @Autowired
     private Connection connection;
 
-    public Statement executeStoredProcedure(String sp, final boolean returnStatement, final SqlParameter... params)
+    public CallableStatement executeStoredProcedure(
+            String sp, final boolean returnStatement,
+            final SqlParameter... params)
             throws SQLException {
         final int paramsSize = params.length;
         sp = this.prepareStoredProcedureToCall(sp, paramsSize);

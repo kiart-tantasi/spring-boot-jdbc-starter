@@ -55,7 +55,8 @@ public class JdbcTemplate {
     /*
      * Private Ultility Methods
      */
-    private List<List<Map<String, Object>>> getMultipleResultSets(final Statement statement,
+    private List<List<Map<String, Object>>> getMultipleResultSets(
+            final Statement statement,
             final List<List<String>> rowMappers)
             throws SQLException {
         final List<List<Map<String, Object>>> multipleResultSets = new ArrayList<>();
