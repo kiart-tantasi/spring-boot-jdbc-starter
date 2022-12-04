@@ -29,9 +29,8 @@ jacoco {
     reportsDirectory = file("${buildDir}/reports/jacoco")
 }
 String[] excludeds = [
-  "**/JdbcMysqlApplication.*",
-  "**/models/*",
-  "**/configuration/*",
+  "com/kt/jdbcmysql/JdbcMysqlApplication.*",
+  "com/kt/jdbcmysql/configuration/*",
 ]
 jacocoTestReport {
 	afterEvaluate {
