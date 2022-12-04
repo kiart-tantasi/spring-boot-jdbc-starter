@@ -73,4 +73,10 @@ Unit Test and Code Coverage Test
 `./gradlew jacoco`
 
 <br>
+
+**Code Coverage Record**
+
+- December 4th, 2022 - [100%](https://github.com/kiart-tantasi/spring-boot-jdbc-starter/pull/9#issuecomment-1336326987)
+
+<br>
 <br>
