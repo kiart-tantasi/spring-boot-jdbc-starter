@@ -17,6 +17,13 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew jacoco
+      - name: Upload Test Reports (if failure)
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: test-reports
+          path: build/reports
+          if-no-files-found: error
       - name: Jacoco Report (madrapps)
         uses: madrapps/jacoco-report@v1.3
         with:
