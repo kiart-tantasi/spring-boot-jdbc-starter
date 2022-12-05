@@ -25,41 +25,40 @@ tasks.named('test') {
 
 // JACOCO
 jacoco {
-    toolVersion = "0.8.8"
-    reportsDirectory = file("${buildDir}/reports/jacoco")
+	toolVersion = "0.8.8"
 }
 String[] excludeds = [
-  "com/kt/jdbcmysql/JdbcMysqlApplication.*",
-  "com/kt/jdbcmysql/configuration/*",
+	"com/kt/jdbcmysql/JdbcMysqlApplication.*",
+	"com/kt/jdbcmysql/configuration/*",
 ]
 jacocoTestReport {
 	reports {
 		xml.required = true
+		html.required = true
+		csv.required = false
 	}
 	afterEvaluate {
-	    classDirectories.setFrom(files(classDirectories.files.collect {
+		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(dir: it, exclude: excludeds)
 		}))
 	}
 }
 jacocoTestCoverageVerification {
-	dependsOn "jacocoTestReport"
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.95
+			}
+		}
+	}
 	afterEvaluate {
-	    classDirectories.setFrom(files(classDirectories.files.collect {
+		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(dir: it, exclude: excludeds)
 		}))
 	}
-    violationRules {
-        rule {
-            limit {
-                minimum = 0.95
-            }
-        }
-    }
 }
 
-tasks.create(name: "jacoco") {
-	dependsOn "test"
-	dependsOn "jacocoTestReport"
-	dependsOn "jacocoTestCoverageVerification"
+test {
+	finalizedBy jacocoTestReport
+	finalizedBy jacocoTestCoverageVerification
 }

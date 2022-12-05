@@ -3,7 +3,7 @@
 Before starting the application, please run
 
 ```
-docker-compose up -d
+docker-compose up
 ```
 
 or `make up` if you have `make` installed to create MySQL server on Docker
@@ -62,15 +62,9 @@ or `make down` to remove the container and the volume
 
 # Testing
 
-Unit Test
+Run Unit Test and Code Coverage Test
 
 `./gradlew test`
-
-<br>
-
-Unit Test and Code Coverage Test
-
-`./gradlew jacoco`
 
 <br>
 

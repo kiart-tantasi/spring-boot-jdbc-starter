@@ -13,10 +13,10 @@ jobs:
           distribution: "corretto"
           java-version: "17"
           cache: gradle
-      - name: Unit Test and Code Coverage Test
+      - name: Run Unit Test and Code Coverage Test
         run: |
           chmod +x ./gradlew
-          ./gradlew jacoco
+          ./gradlew test
       - name: Upload Test Reports (if failure)
         uses: actions/upload-artifact@v3
         if: failure()
