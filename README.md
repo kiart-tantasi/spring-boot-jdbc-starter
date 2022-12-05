@@ -3,7 +3,7 @@
 Before starting the application, please run
 
 ```
-docker-compose up -d
+docker-compose up
 ```
 
 or `make up` if you have `make` installed to create MySQL server on Docker
