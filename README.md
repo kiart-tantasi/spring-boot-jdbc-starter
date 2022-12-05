@@ -62,15 +62,9 @@ or `make down` to remove the container and the volume
 
 # Testing
 
-Unit Test
+Run Unit Test and Code Coverage Test
 
 `./gradlew test`
-
-<br>
-
-Unit Test and Code Coverage Test
-
-`./gradlew jacoco`
 
 <br>
 
